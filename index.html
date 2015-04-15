@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en-us">
+  <head>
+    <meta charset="UTF-8">
+    <title>Jerkar by jerkar</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" type="text/css" href="stylesheets/normalize.css" media="screen">
+    <link href='http://fonts.googleapis.com/css?family=Open+Sans:400,700' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css" media="screen">
+    <link rel="stylesheet" type="text/css" href="stylesheets/github-light.css" media="screen">
+  </head>
+  <body>
+    <section class="page-header">
+      <h1 class="project-name">Jerkar</h1>
+      <h2 class="project-tagline">The 100% Java Build Tool</h2>
+      <a href="https://github.com/jerkar/jerkar" class="btn">View on GitHub</a>
+      <a href="https://github.com/jerkar/jerkar/zipball/master" class="btn">Download .zip</a>
+      <a href="https://github.com/jerkar/jerkar/tarball/master" class="btn">Download .tar.gz</a>
+    </section>
+
+    <section class="main-content">
+      <p><img src="https://github.com/jerkar/jerkar/blob/master/doc/jerkar.png" alt="Logo of Jerkar"></p>
+
+<p>Jerkar is a complete built system ala Maven or Gradle but using only a <strong>Java</strong> internal DSL to describe builds : no XML, no foreign language.
+It is intended to build project written in Java language but can also be used for any task execution purpose.</p>
+
+<h1>
+<a id="motivation" class="anchor" href="#motivation" aria-hidden="true"><span class="octicon octicon-link"></span></a>Motivation</h1>
+
+<p>So far, for building their projects, java developers generally use an XML based (<strong>Ant</strong>, <strong>Maven</strong>) or a foreign language DSL (<strong>Gradle</strong>, <strong>Rake</strong>, <strong>SBT</strong>, ...) tool.
+They just can't use <strong>Java</strong> to create organization scalable builds. <strong>Jerkar</strong> purposes to fill this gap.</p>
+
+<p>Yet, using Java for building a Java based project brings quite valuable benefits :</p>
+
+<ul>
+<li>You don't have to learn an extra language or XML soup just for build purpose : get higher cohesion and lower cognitive load</li>
+<li>You leverage directly the power and flexibility of Java</li>
+<li>You leverage compilation, code-completion and debug facilities provided by your IDE without installing 3rd party plugins/tools. For static typed language as Java, it notably brings robustness to your builds</li>
+<li>Your builds can benefit from any libraries without needing to wrap it in a plugin or a specific component</li>
+<li>You can master build complexity the same way you do for regular code (ie utility classes, SoC, inheritance, composition,...) </li>
+<li>Using fluent style internal DSL, syntax is much more concise and explicit than an XML description</li>
+<li>It's easier to dig into the build engine to investigate on behavior as builds are in essence, only API calls</li>
+</ul>
+
+<p>Additionally the following features were missing from mainstream existing tools :</p>
+
+<ul>
+<li>Run pluggable extra features (test coverage, special packaging, static code analysis,...) without editing the build file</li>
+<li>Write nothing-at-all for building simple/standard projects (just relying on convention and/or IDE meta-data files, even to launch static analysis tools or generate ear/war files)</li>
+</ul>
+
+<h2>
+<a id="overcoming-java-shortcomings" class="anchor" href="#overcoming-java-shortcomings" aria-hidden="true"><span class="octicon octicon-link"></span></a>Overcoming Java shortcomings</h2>
+
+<p>One believes that the verbosity and the statically typed nature of Java make it hardly suitable for expressing builds.
+Jerkar tends to prove the opposite :</p>
+
+<ul>
+<li>Jerkar transparently compiles the java build classes prior to execute them. This step is very quick, Jerkar velocity does not suffer from this 'extra' step</li>
+<li>Jerkar heavily relies on convention and sensitive defaults : you only need to specify what is not 'standard'</li>
+<li>Jerkar features fluent APIs whose allow to express tasks in a very concise way. Jerkar build classes are close to Gradle script concision (and even more in certain cases) </li>
+<li>Jerkar comes with no 3rd party dependency (except Ivy) to avoid version clashing.</li>
+<li>Jerkar keeps the runtime simple (no bytecode enhancement) for easier debugging </li>
+</ul>
+
+<h1>
+<a id="main-features" class="anchor" href="#main-features" aria-hidden="true"><span class="octicon octicon-link"></span></a>Main features</h1>
+
+<p>Jerkar provides what a self respecting modern, enterprise scale, build system should and more :</p>
+
+<ul>
+<li>Provides both APIs and a command line tool.</li>
+<li>Multi level of configuration system (Jerkar instance, user, build class, build command line)</li>
+<li>Powerfull dependency management (back-ended by Ivy so compatible with Maven repositories)</li>
+<li>Publication on Ivy or Maven repositories</li>
+<li>Multi-project support</li>
+<li>Powerfull fluent API to manipulate files, perform  compilations, tests, archives and all build related stuff</li>
+<li>Choice between free form builds (ala Ant) and enforced build templates (ala Maven)</li>
+<li>Hierarchical log output tracking execution time for each intermediate step</li>
+<li>Pluggable architecture</li>
+<li>Ability to get information from naming convention and Eclipse files, so in simpler cases you won't need to write script at all (even to generate war or perform SonarQube analysis) !!!</li>
+</ul>
+
+<p>The documentation is at its very early stage but the code is yet pretty close to completion for a first release. 
+I mainly need help for further testing, writing documentation, polishing the API... and getting some feedback of course.</p>
+
+<h1>
+<a id="how-to-build" class="anchor" href="#how-to-build" aria-hidden="true"><span class="octicon octicon-link"></span></a>How to build</h1>
+
+<p>Jerkar is made of following projects :</p>
+
+<ul>
+<li>core : complete Jerkar project but without embedding following plugins</li>
+<li>plugins-jacoco : a plugin to perform test coverage</li>
+<li>plugins-sonar : a plugin to perform sonar analysis</li>
+<li>distrib-all : the core distrib augmented with the above plugins</li>
+</ul>
+
+<p>Jerkar builds with itself. To get Jerkar full distrib built from the Java sources only, the simpler is to import these 4 projects in Eclipse, then :</p>
+
+<ul>
+<li>Create a Java Application run configuration (Run Configuration ... -&gt; Java Application -&gt; new)
+
+<ul>
+<li>Make sure that the Runtime JRE is a JDK (6 or above)</li>
+<li>Choose <code>org.jerkar.distrib-all</code> as project</li>
+<li>Choose <code>org.jerkar.Main</code> as Main class</li>
+</ul>
+</li>
+<li>Run it : It will launch a multi-project build. You will find result for the full distrib in <em>org.jerkar.distrib-all/build/output</em> directory </li>
+</ul>
+
+<h1>
+<a id="quick-start" class="anchor" href="#quick-start" aria-hidden="true"><span class="octicon octicon-link"></span></a>Quick start</h1>
+
+<ol>
+<li>Add the org.jerkar.core-fat.jar (found in the distrib) in your IDE build-path. This jar includes Jerkar core along plugins classes</li>
+<li>Create a <code>build/spec</code> folder at the base of your project and make it a source folder in your IDE. In Jerkar, all related build stuff (build definition, local 3rd party libs, produced artifacts,...) lies under <em>build</em> directory</li>
+<li>Write the build class extending JkJavaBuild in this directory (in whatever package)</li>
+<li>If your project respect convention, do not need managed dependencies and don't do 'special' thing, you don't even need 2) and 3) points</li>
+<li>Launch the <code>org.jerkar.Main</code> class in your IDE or type <code>jerkar</code> in the command line (with the root of your project as working directory)</li>
+</ol>
+
+<p>This will launch the <code>doDefault</code> method defined in your build class. Note that this method is declared in the <code>JkJavaBuild</code> and invoke in sequence clean, compile, unitTest and pack methods.</p>
+
+<p>If you want to launch several methods of your build, type <code>jerkar doSomething doSomethingElse</code>. Jerkar recognizes any public zero-argument method returning <code>void</code> as build method.
+Type <code>jerkar help</code> to get all the build methods provided by your build class. </p>
+
+<h2>
+<a id="example--lets-see-how-jerkar-core-build-itself" class="anchor" href="#example--lets-see-how-jerkar-core-build-itself" aria-hidden="true"><span class="octicon octicon-link"></span></a>Example : Let's see how Jerkar core build itself</h2>
+
+<p>Jerkar core build is not complex but do some specific stuff : apart making standard compilation, junit tests and jar packaging, it constructs a distribution archive gathering jars, sources, property, readme files and executable.
+This is the build class :</p>
+
+<div class="highlight highlight-java"><pre>    <span class="pl-k">public</span> <span class="pl-k">class</span> <span class="pl-en">CoreBuild</span> <span class="pl-k">extends</span> <span class="pl-e">JkJavaBuild</span> {
+
+        <span class="pl-k">public</span> <span class="pl-smi">File</span> distripZipFile; <span class="pl-c">// The zip file that will contain the whole distrib</span>
+
+        <span class="pl-k">public</span> <span class="pl-smi">File</span> distribFolder;  <span class="pl-c">// The folder that will contain the whole distrib</span>
+
+        <span class="pl-k">@Override</span>
+        <span class="pl-k">protected</span> <span class="pl-k">void</span> <span class="pl-en">init</span>() {
+            distripZipFile <span class="pl-k">=</span> ouputDir(<span class="pl-s"><span class="pl-pds">"</span>jerkar-distrib.zip<span class="pl-pds">"</span></span>);
+            distribFolder <span class="pl-k">=</span> ouputDir(<span class="pl-s"><span class="pl-pds">"</span>jerkar-distrib<span class="pl-pds">"</span></span>);
+            <span class="pl-v">this</span><span class="pl-k">.</span>fatJar <span class="pl-k">=</span> <span class="pl-c1">true</span>;
+        }
+
+        <span class="pl-c">// Interpolize resource files replacing ${version} by a timestamp (in the Manifest)</span>
+        <span class="pl-k">@Override</span>
+        <span class="pl-k">protected</span> <span class="pl-smi">JkResourceProcessor</span> <span class="pl-en">resourceProcessor</span>() {
+            <span class="pl-k">return</span> <span class="pl-v">super</span><span class="pl-k">.</span>resourceProcessor()<span class="pl-k">.</span>with(<span class="pl-s"><span class="pl-pds">"</span>version<span class="pl-pds">"</span></span>, version()<span class="pl-k">.</span>name() <span class="pl-k">+</span> <span class="pl-s"><span class="pl-pds">"</span> - built at - <span class="pl-pds">"</span></span> <span class="pl-k">+</span> buildTimestamp());
+        }
+
+        <span class="pl-c">// Include the making of the distribution into the application packaging.</span>
+        <span class="pl-k">@Override</span>
+        <span class="pl-k">public</span> <span class="pl-k">void</span> <span class="pl-en">pack</span>() {
+            <span class="pl-v">super</span><span class="pl-k">.</span>pack();
+            distrib();
+        }
+
+        <span class="pl-c">// Create a distribution of Jerkar core, including jars, sources and windows/linux launch scripts</span>
+        <span class="pl-k">private</span> <span class="pl-k">void</span> <span class="pl-en">distrib</span>() {
+            <span class="pl-k">final</span> <span class="pl-smi">JkDir</span> distrib <span class="pl-k">=</span> <span class="pl-smi">JkDir</span><span class="pl-k">.</span>of(distribFolder);
+            <span class="pl-smi">JkLog</span><span class="pl-k">.</span>startln(<span class="pl-s"><span class="pl-pds">"</span>Creating distrib <span class="pl-pds">"</span></span> <span class="pl-k">+</span> distripZipFile<span class="pl-k">.</span>getPath());
+            <span class="pl-k">final</span> <span class="pl-smi">JkJavaPacker</span> packer <span class="pl-k">=</span> packer();
+            distrib<span class="pl-k">.</span>importDirContent(baseDir(<span class="pl-s"><span class="pl-pds">"</span>src/main/dist<span class="pl-pds">"</span></span>));
+            distrib<span class="pl-k">.</span>importFiles(packer<span class="pl-k">.</span>jarFile(), packer<span class="pl-k">.</span>fatJarFile());
+            distrib<span class="pl-k">.</span>sub(<span class="pl-s"><span class="pl-pds">"</span>libs/required<span class="pl-pds">"</span></span>)<span class="pl-k">.</span>importDirContent(baseDir(<span class="pl-s"><span class="pl-pds">"</span>build/libs/compile<span class="pl-pds">"</span></span>));
+            distrib<span class="pl-k">.</span>sub(<span class="pl-s"><span class="pl-pds">"</span>libs/sources<span class="pl-pds">"</span></span>)<span class="pl-k">.</span>importDirContent(baseDir(<span class="pl-s"><span class="pl-pds">"</span>build/libs-sources<span class="pl-pds">"</span></span>))
+                                          .importFiles(packer<span class="pl-k">.</span>jarSourceFile());
+            distrib<span class="pl-k">.</span>zip()<span class="pl-k">.</span>to(distripZipFile, <span class="pl-smi">Deflater</span><span class="pl-c1"><span class="pl-k">.</span>BEST_COMPRESSION</span>);
+            <span class="pl-smi">JkLog</span><span class="pl-k">.</span>done();
+        }
+    }</pre></div>
+
+<p>Notice that we need only to specify what is not 'standard'</p>
+
+<ul>
+<li>group and project name are inferred from the project folder name ('org.jerkar.core' so group is 'org.jerkar' and project is 'core')</li>
+<li>version is not specified, so by default it is <code>1.0-SNAPSHOT</code>(unless you inject the version via the command line using <code>-forcedVersion=Xxxxx</code>)</li>
+<li>sources, resources and tests folder are located on the conventional folders (same as Maven).</li>
+<li>this build class relies on local dependencies (dependencies located conventionally inside the project) so we don't need to mention them</li>
+</ul>
+
+<p>A dependency managed flavor of this build is <a href="https://github.com/jerkar/jerkar/blob/master/org.jerkar.core/build/spec/org/jerkar/CoreDepManagedBuild.java">CoreDepManagedBuild.java</a></p>
+
+<p>To launch the build for creating distrib from the command line, simply type : </p>
+
+<pre><code>jerkar
+</code></pre>
+
+<p>This will interpole resources (replacing ${version} by a timestamp everywhere), compile, run unit tests, create jars and package the distrib in zip file. 
+This command is equivalent to <code>jerkar doDefault</code> : when no method specified, Jerkar invoke the <code>doDefault</code> method. Build result is <em>output</em> folder : </p>
+
+<p><img src="https://github.com/jerkar/jerkar/blob/master/doc/project-layout.png" alt="image of project layout"></p>
+
+<hr>
+
+<p>To launch a SonarQube analysis along test coverage and producing javadoc: </p>
+
+<pre><code>jerkar clean compile unitTest sonar#verify javadoc jacoco# -verbose=true
+</code></pre>
+
+<p>This will compile, unit test with test coverage, launch a sonar analysis with sonar user settings and finally produce the javadoc. </p>
+
+<ul>
+<li>
+<code>clean</code>, <code>compile</code>, <code>unitTest</code> and <code>javadoc</code> are build methods inherited by <code>CoreBuild</code>
+</li>
+<li>
+<code>sonar#verify</code> means that Jerkar will invoke a method called <code>verify</code>in the <code>sonar</code> plugin class</li>
+<li>
+<code>jacoco#</code> means that the <code>jacoco</code> plugin will be activated while the junit test will be running</li>
+<li>
+<code>-verbose=true</code>means that the log will display verbose information ('-' prefix is the way to pass parameter in Jerkar)</li>
+</ul>
+
+<p>Notice that Jacoco test coverage and SonarQube analysis are triggered without mention in the build class ! </p>
+
+      <footer class="site-footer">
+        <span class="site-footer-owner"><a href="https://github.com/jerkar/jerkar">Jerkar</a> is maintained by <a href="https://github.com/jerkar">jerkar</a>.</span>
+
+        <span class="site-footer-credits">This page was generated by <a href="https://pages.github.com">GitHub Pages</a> using the <a href="https://github.com/jasonlong/cayman-theme">Cayman theme</a> by <a href="https://twitter.com/jasonlong">Jason Long</a>.</span>
+      </footer>
+
+    </section>
+
+  
+  </body>
+</html>
+
