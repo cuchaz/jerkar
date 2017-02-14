@@ -188,22 +188,31 @@ final class IvyTranslations {
         return result;
     }
 
-    public static ModuleRevisionId toModuleRevisionId(JkModuleDependency moduleDependency,
-            JkVersion resolvedVersion) {
+    public static ModuleRevisionId toModuleRevisionId(JkModuleDependency moduleDependency, JkVersion resolvedVersion) {
+        final Map<String, String> extra = new HashMap<String,String>();
         final String originalVersion = moduleDependency.versionRange().definition();
-        if (resolvedVersion == null || resolvedVersion.name().equals(originalVersion)) {
-            return new ModuleRevisionId(toModuleId(moduleDependency.moduleId()), originalVersion);
+        if (resolvedVersion != null && !resolvedVersion.name().equals(originalVersion)) {
+            extra.put("revConstraints", originalVersion);
         }
-        final Map<String, String> extra = JkUtilsIterable.mapOf("revConstraints", originalVersion);
         if (moduleDependency.ext() != null) {
             extra.put("ext", moduleDependency.ext());
         }
-        return ModuleRevisionId.newInstance(moduleDependency.moduleId().group(), moduleDependency
-                .moduleId().name(), resolvedVersion.name(), extra);
+        if (moduleDependency.classifier() != null) {
+            extra.put("classifier", moduleDependency.classifier());
+        }
+        if (resolvedVersion == null) {
+            resolvedVersion = JkVersion.name(moduleDependency.versionRange().definition());
+        }
+        final ModuleRevisionId id = ModuleRevisionId.newInstance(
+                moduleDependency.moduleId().group(),
+                moduleDependency.moduleId().name(),
+                resolvedVersion.name(),
+                extra);
+        return id;
 
     }
 
-    private static ModuleId toModuleId(JkModuleId moduleId) {
+    public static ModuleId toModuleId(JkModuleId moduleId) {
         return new ModuleId(moduleId.group(), moduleId.name());
     }
 
@@ -400,10 +409,17 @@ final class IvyTranslations {
         }
 
         // Add dependencies
-        for (final JkScopedDependency scopedDependency : dependencies) {
+        for (JkScopedDependency scopedDependency : dependencies) {
             if (scopedDependency.dependency() instanceof JkModuleDependency) {
-                final JkModuleDependency externalModule = (JkModuleDependency) scopedDependency
+                JkModuleDependency externalModule = (JkModuleDependency) scopedDependency
                         .dependency();
+                // don't send classifiers to Ivy here
+                // it gets super-duper confused and can't find the Maven pom anymore =(
+                if (externalModule.classifier() != null) {
+                    externalModule = externalModule.classifier(null);
+                    scopedDependency = scopedDependency.dependency(externalModule);
+                }
+                assert (externalModule.classifier() == null);
                 final JkVersion resolvedVersion = resolvedVersions.versionOf(externalModule
                         .moduleId());
                 final DependencyDescriptor dependencyDescriptor;
